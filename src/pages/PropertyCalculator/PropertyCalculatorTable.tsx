@@ -1,12 +1,22 @@
+import { useState } from "react";
 import { Property, properties } from "../../configs/properties";
 import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { tableCellClasses } from "@mui/material/TableCell";
+
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Toolbar,
+  Button,
+  Drawer,
+} from "@mui/material";
+
 import { FC, useMemo } from "react";
 import {
   calculateGst,
@@ -17,6 +27,20 @@ import {
   getPricePerSqft,
 } from "./property_calc_util";
 import { FormValue } from "./property_calc_types";
+
+const ToolbarButton = styled(Button)({
+  backgroundColor: "black",
+  color: "white",
+  "&:hover": {
+    backgroundColor: "gray",
+  },
+});
+
+const StyledToolbar = styled(Toolbar)({
+  backgroundColor: "white",
+  border: "1px solid black",
+  color: "black",
+});
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -222,6 +246,12 @@ const createEntry = (property: Property, formData: FormValue) => {
 export const PropertyCalculatorTable: FC<{
   formData: FormValue;
 }> = ({ formData }) => {
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open);
+  };
+
   const data = useMemo(() => {
     const entries: RowData[] = [];
 
@@ -311,6 +341,12 @@ export const PropertyCalculatorTable: FC<{
 
   return (
     <TableContainer component={Paper}>
+      <StyledToolbar>
+        <ToolbarButton variant="contained" onClick={() => setDrawerOpen(true)}>
+          Add Property
+        </ToolbarButton>
+      </StyledToolbar>
+
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
@@ -331,6 +367,25 @@ export const PropertyCalculatorTable: FC<{
           {renderColumns(monthly_payment_columns)}
         </TableBody>
       </Table>
+
+      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box
+          sx={{ width: "80vw", p: 2 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
+          <Button fullWidth sx={{ mb: 1 }}>
+            Option 1
+          </Button>
+          <Button fullWidth sx={{ mb: 1 }}>
+            Option 2
+          </Button>
+          <Button fullWidth sx={{ mb: 1 }}>
+            Option 3
+          </Button>
+        </Box>
+      </Drawer>
     </TableContainer>
   );
 };

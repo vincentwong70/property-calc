@@ -1,7 +1,11 @@
-import { TextField } from "@mui/material";
 import { PropertyCalculatorTable } from "./PropertyCalculatorTable";
 import { useState } from "react";
 import { FormValue } from "./property_calc_types";
+import { AppForm } from "../../components/form/AppForm";
+import {
+  ComponentTypes,
+  Field,
+} from "../../components/form/form_components/component_types";
 
 const initialFormValue = {
   monthlyIncome: 14400,
@@ -13,54 +17,36 @@ const initialFormValue = {
 export const PropertyCalculator = () => {
   const [formData, setFormData] = useState<FormValue>(initialFormValue);
 
-  const setFormDataAttr = (e: any) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const formFields: {
-    label: string;
-    field: keyof FormValue;
-  }[] = [
+  const formFields: Field<FormValue>[] = [
     {
       label: "Mortgage Rate",
       field: "mortgageRate",
+      type: ComponentTypes.FLOAT,
     },
     {
       label: "Amoritzation",
       field: "amoritzation",
+      type: ComponentTypes.NUMBER,
     },
     {
       label: "Down Payment Percentage",
       field: "downPaymentPercentage",
+      type: ComponentTypes.NUMBER,
     },
     {
       label: "Monthly Income",
       field: "monthlyIncome",
+      type: ComponentTypes.NUMBER,
     },
   ];
 
   return (
     <div className="flex flex-col w-full h-full p-4">
-      <div className={"flex flex-col gap-4 p-4"}>
-        {formFields.map((config) => {
-          return (
-            <TextField
-              key={config.field}
-              label={config.label}
-              type="number"
-              name={config.field}
-              value={formData[config.field]}
-              onChange={setFormDataAttr}
-            />
-          );
-        })}
-      </div>
-
+      <AppForm
+        formData={formData}
+        setFormData={setFormData}
+        fields={formFields}
+      />
       <PropertyCalculatorTable formData={formData} />
     </div>
   );
