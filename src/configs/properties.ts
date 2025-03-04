@@ -1,6 +1,6 @@
 export enum PropertyType {
   TOWNHOUSE = "TOWNHOUSE",
-  DUPLLEX = "DUPLEX",
+  DUPLEX = "DUPLEX",
 }
 
 export type Plan = {
@@ -17,24 +17,10 @@ export type Property = {
   parking_cost?: number;
   strata_cost?: number; // per sqft
   plans?: Plan[];
+  link?: string;
 } & Partial<Omit<Plan, "name">>;
 
 export const properties: Property[] = [
-  {
-    name: "Moonlight Sonata",
-    type: PropertyType.TOWNHOUSE,
-    parking_cost: 35000,
-    strata_cost: 0.51,
-    is_new: true,
-    plans: [
-      {
-        name: "D7",
-        price: 1330000,
-        interior_sqft: 1349,
-        exterior_sqft: 280,
-      },
-    ],
-  },
   {
     name: "Samer by Domus",
     type: PropertyType.TOWNHOUSE,
@@ -48,50 +34,34 @@ export const properties: Property[] = [
         price: 1328000,
         interior_sqft: 1522,
       },
-      {
-        name: "B2E",
-        price: 1229000,
-        interior_sqft: 1246,
-      },
     ],
   },
   {
-    name: "Dwell by Anthem",
+    name: "5 - 856 Orwell Street",
     type: PropertyType.TOWNHOUSE,
-    parking_cost: 35000,
-    strata_cost: 0.37,
-    is_new: true,
-    plans: [
-      {
-        name: "D2",
-        price: 1299000,
-        interior_sqft: 1385,
-      },
-    ],
+    price: 1619900,
+    interior_sqft: 1469,
+    parking_cost: 0,
+    strata_cost: 0.33,
+    is_new: false,
+    link: "https://www.rew.ca/properties/5-856-orwell-street-north-vancouver-bc",
   },
   {
-    name: "1515 Rupert",
+    name: "5 - 856 Orwell Street (Negotiated Price)",
     type: PropertyType.TOWNHOUSE,
-    parking_cost: 40000,
-    strata_cost: 0.37,
-    is_new: true,
-    plans: [
-      {
-        name: "H2",
-        price: 1499000,
-        interior_sqft: 1330,
-      },
-      {
-        name: "A1",
-        price: 1359000,
-        interior_sqft: 1263,
-      },
-    ],
+    price: 1500000,
+    interior_sqft: 1469,
+    parking_cost: 0,
+    strata_cost: 0.33,
+    is_new: false,
+    link: "https://www.rew.ca/properties/5-856-orwell-street-north-vancouver-bc",
   },
   {
-    name: "3225 E 29th Ave",
-    type: PropertyType.DUPLLEX,
-    price: 1499000,
-    interior_sqft: 1304,
+    name: "1 - 2727 Parker Street",
+    type: PropertyType.DUPLEX,
+    price: 1188888,
+    interior_sqft: 1436,
+    is_new: true,
+    link: "https://www.rew.ca/properties/1-2727-parker-street-vancouver-bc?property_click=map#",
   },
 ];

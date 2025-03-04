@@ -1,5 +1,7 @@
 import { ComponentTypes, FormComponent } from "./component_types";
 import { FloatInput, NumberInput, TextInput } from "./Input";
+import { AppSelect } from "./Select";
+import { AppSwitch } from "./Switch";
 
 const FormComponents: {
   [key in ComponentTypes]: FormComponent;
@@ -7,9 +9,8 @@ const FormComponents: {
   [ComponentTypes.TEXT]: TextInput,
   [ComponentTypes.NUMBER]: NumberInput,
   [ComponentTypes.FLOAT]: FloatInput,
-  [ComponentTypes.SELECT]: () => {
-    return <div>test</div>;
-  },
+  [ComponentTypes.SELECT]: AppSelect,
+  [ComponentTypes.SWITCH]: AppSwitch,
 };
 
 export const getComponentByType = (type: ComponentTypes) => {

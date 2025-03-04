@@ -12,8 +12,6 @@ import { Link } from "react-router-dom";
 import { FC, useState } from "react";
 import { page_routes } from "../../routes/Route";
 
-const pages = ["Monthly Expense Calculator", "Property Calculator"];
-
 export const AppToolbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
@@ -57,9 +55,13 @@ export const AppToolbar = () => {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+              {page_routes.map(({ label, path }) => (
+                <MenuItem key={label} onClick={handleCloseNavMenu}>
+                  <Link to={path}>
+                    <Typography sx={{ textAlign: "center" }}>
+                      {label}
+                    </Typography>
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>

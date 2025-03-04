@@ -7,13 +7,13 @@ export enum PATHS {
 }
 
 export const page_routes = [
-  {
-    label: "Monthly Expense Calculator",
-    path: PATHS.MONTHLY_EXPENSE,
-    Component: () => {
-      return <div>expense</div>;
-    },
-  },
+  // {
+  //   label: "Monthly Expense Calculator",
+  //   path: PATHS.MONTHLY_EXPENSE,
+  //   Component: () => {
+  //     return <div>expense</div>;
+  //   },
+  // },
   {
     label: "Property Comparison",
     path: PATHS.PROPERTY_CALC,

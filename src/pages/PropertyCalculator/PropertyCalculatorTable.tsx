@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Property, properties } from "../../configs/properties";
 import { styled } from "@mui/material/styles";
 import { tableCellClasses } from "@mui/material/TableCell";
+import LinkIcon from "@mui/icons-material/Link";
 
 import {
-  Box,
   Table,
   TableBody,
   TableCell,
@@ -27,6 +27,8 @@ import {
   getPricePerSqft,
 } from "./property_calc_util";
 import { FormValue } from "./property_calc_types";
+
+import { AddProperty } from "./AddProperty";
 
 const ToolbarButton = styled(Button)({
   backgroundColor: "black",
@@ -78,6 +80,7 @@ type RowData = {
   mortgage_payment: number;
   total_monthly_fees: number;
   monthly_income: FormValue["monthlyIncome"];
+  link?: Property["link"];
 } & {
   [key: string]: any;
 };
@@ -221,6 +224,7 @@ const createEntry = (property: Property, formData: FormValue) => {
 
   const entry: RowData = {
     name: property.name,
+    link: property?.link,
     type: property.type,
     parking_cost,
     strata_cost: property.strata_cost,
@@ -247,6 +251,7 @@ export const PropertyCalculatorTable: FC<{
   formData: FormValue;
 }> = ({ formData }) => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [userProperties, setUserProperties] = useState<Property[]>([]);
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
@@ -254,8 +259,9 @@ export const PropertyCalculatorTable: FC<{
 
   const data = useMemo(() => {
     const entries: RowData[] = [];
+    const allProperties = [...properties, ...userProperties];
 
-    for (const property of properties) {
+    for (const property of allProperties) {
       if (Array.isArray(property.plans)) {
         for (const plan of property.plans) {
           entries.push(
@@ -282,7 +288,7 @@ export const PropertyCalculatorTable: FC<{
     }
 
     return entries;
-  }, [formData]);
+  }, [formData, userProperties]);
 
   const renderColumns = (columns: PropertyColumn[]) => {
     return columns.map((column) => {
@@ -354,8 +360,21 @@ export const PropertyCalculatorTable: FC<{
 
             {data.map((entry) => {
               return (
-                <StyledTableCell key={entry.name} align="left">
-                  {entry.name}
+                <StyledTableCell
+                  key={entry.name}
+                  align="left"
+                  sx={{
+                    color: "blue",
+                  }}
+                >
+                  <div className="flex">
+                    {entry?.link && (
+                      <a href={entry.link} target="_blank" className="pr-2">
+                        <LinkIcon />
+                      </a>
+                    )}
+                    {entry.name}
+                  </div>
                 </StyledTableCell>
               );
             })}
@@ -369,22 +388,15 @@ export const PropertyCalculatorTable: FC<{
       </Table>
 
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-        <Box
-          sx={{ width: "80vw", p: 2 }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
-        >
-          <Button fullWidth sx={{ mb: 1 }}>
-            Option 1
-          </Button>
-          <Button fullWidth sx={{ mb: 1 }}>
-            Option 2
-          </Button>
-          <Button fullWidth sx={{ mb: 1 }}>
-            Option 3
-          </Button>
-        </Box>
+        <AddProperty
+          onSubmit={(formData) => {
+            if (formData.name) {
+              setUserProperties((prev) => [...prev, formData]);
+              toggleDrawer(false)();
+            }
+          }}
+          onClose={toggleDrawer(false)}
+        />
       </Drawer>
     </TableContainer>
   );
