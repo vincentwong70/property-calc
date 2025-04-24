@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Property, properties } from "../../configs/properties";
 import { styled } from "@mui/material/styles";
 import { tableCellClasses } from "@mui/material/TableCell";
 import LinkIcon from "@mui/icons-material/Link";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 
 import {
   Table,
@@ -22,17 +25,22 @@ import {
   calculateGst,
   calculatePropertyTransferTax,
   formatCurrency,
-  getMonthlyStrataFees,
   getMortgagePayment,
   getPricePerSqft,
 } from "./property_calc_util";
 import { FormValue } from "./property_calc_types";
 
-import { AddProperty } from "./AddProperty";
+import { AddProperty, AddPropertyFormData } from "./AddProperty";
+import { isNil } from "lodash";
+import { useStoreProperties } from "./property_calc_hooks";
+import { useSnackbar } from "../../providers/NotifyProvider";
+import { AlertColor } from "@mui/material";
 
 const ToolbarButton = styled(Button)({
   backgroundColor: "black",
   color: "white",
+  marginLeft: "0.25rem",
+  marginRight: "0.25rem",
   "&:hover": {
     backgroundColor: "gray",
   },
@@ -81,6 +89,7 @@ type RowData = {
   total_monthly_fees: number;
   monthly_income: FormValue["monthlyIncome"];
   link?: Property["link"];
+  is_default: Property["is_default"];
 } & {
   [key: string]: any;
 };
@@ -164,7 +173,18 @@ const monthly_payment_columns: PropertyColumn[] = [
         return "N/A";
       }
 
-      return formatCurrency(data.strata_cost);
+      const formattedMonthlyPayment = formatCurrency(data.strata_cost);
+      let strataPricePerSqft;
+
+      if (!isNil(data.interior_sqft) && data.interior_sqft > 0) {
+        strataPricePerSqft = Number(
+          data.strata_cost / data.interior_sqft
+        ).toFixed(2);
+      }
+
+      return !isNil(strataPricePerSqft)
+        ? `${formattedMonthlyPayment} (${strataPricePerSqft} $/sqft)`
+        : formattedMonthlyPayment;
     },
   },
   {
@@ -219,6 +239,7 @@ const createEntry = (property: Property, formData: FormValue) => {
     name: property.name,
     link: property?.link,
     type: property.type,
+    is_default: property.is_default ?? false,
     parking_cost,
     strata_cost: monthly_strata_fees,
     price: property.price as number,
@@ -243,7 +264,11 @@ export const PropertyCalculatorTable: FC<{
   formData: FormValue;
 }> = ({ formData }) => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [userProperties, setUserProperties] = useState<Property[]>([]);
+  const { userProperties, setUserProperties, saveProperties } =
+    useStoreProperties();
+  const propertyDataRef = useRef<undefined | AddPropertyFormData>(undefined);
+
+  const { showSnackbar } = useSnackbar();
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
@@ -340,8 +365,27 @@ export const PropertyCalculatorTable: FC<{
   return (
     <TableContainer component={Paper}>
       <StyledToolbar>
-        <ToolbarButton variant="contained" onClick={() => setDrawerOpen(true)}>
+        <ToolbarButton
+          variant="contained"
+          onClick={() => {
+            propertyDataRef.current = undefined;
+            setDrawerOpen(true);
+          }}
+        >
           Add Property
+        </ToolbarButton>
+
+        <ToolbarButton
+          variant="contained"
+          onClick={() => {
+            saveProperties();
+            showSnackbar("Properties have been saved.", "success");
+          }}
+        >
+          <div className="flex items-center">
+            <SaveIcon className="mr-2" />
+            <span>Save Properties</span>
+          </div>
         </ToolbarButton>
       </StyledToolbar>
 
@@ -359,13 +403,37 @@ export const PropertyCalculatorTable: FC<{
                     color: "blue",
                   }}
                 >
-                  <div className="flex">
+                  <div className="flex items-center space-between">
                     {entry?.link && (
-                      <a href={entry.link} target="_blank" className="pr-2">
+                      <a href={entry.link} target="_blank" className="mr-2">
                         <LinkIcon />
                       </a>
                     )}
-                    {entry.name}
+
+                    <span className="mr-2">{entry.name}</span>
+
+                    {!entry.is_default && (
+                      <>
+                        <EditIcon
+                          className="cursor-pointer mr-2"
+                          onClick={() => {
+                            propertyDataRef.current = entry;
+                            setDrawerOpen(true);
+                          }}
+                        />
+
+                        <DeleteIcon
+                          className="cursor-pointer mr-2"
+                          onClick={() => {
+                            setUserProperties((prev) => {
+                              return prev.filter(
+                                (property) => property.name !== entry.name
+                              );
+                            });
+                          }}
+                        />
+                      </>
+                    )}
                   </div>
                 </StyledTableCell>
               );
@@ -379,13 +447,29 @@ export const PropertyCalculatorTable: FC<{
         </TableBody>
       </Table>
 
-      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+      <Drawer
+        anchor="right"
+        sx={{
+          "& .MuiDrawer-paper": { width: "90vw" },
+        }}
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+      >
         <AddProperty
-          onSubmit={(formData) => {
-            if (formData.name) {
+          data={propertyDataRef.current}
+          onSubmit={(formData, isEdit) => {
+            if (formData.name && !isEdit) {
               setUserProperties((prev) => [...prev, formData]);
-              toggleDrawer(false)();
+            } else if (formData.name && isEdit) {
+              setUserProperties((prev) => {
+                const prevEntries = prev.filter(
+                  (properties) => properties.name !== formData.name
+                );
+                return [...prevEntries, formData];
+              });
             }
+
+            toggleDrawer(false)();
           }}
           onClose={toggleDrawer(false)}
         />

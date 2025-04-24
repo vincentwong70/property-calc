@@ -1,5 +1,5 @@
 import { Box, IconButton, Typography } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { AppForm } from "../../components/form/AppForm";
 import {
@@ -7,8 +7,9 @@ import {
   Field,
 } from "../../components/form/form_components/component_types";
 import { Property, PropertyType } from "../../configs/properties";
+import { isNil } from "lodash";
 
-type AddPropertyFormData = Property;
+export type AddPropertyFormData = Property;
 
 const initialFormData: AddPropertyFormData = {
   name: "",
@@ -22,11 +23,17 @@ const initialFormData: AddPropertyFormData = {
 };
 
 export const AddProperty: FC<{
-  onSubmit: (formValues: AddPropertyFormData) => void;
+  data?: AddPropertyFormData;
+  onSubmit: (formValues: AddPropertyFormData, isEdit: boolean) => void;
   onClose: () => void;
-}> = ({ onClose, onSubmit }) => {
-  const [formData, setFormData] =
-    useState<AddPropertyFormData>(initialFormData);
+}> = ({ data, onClose, onSubmit }) => {
+  const [formData, setFormData] = useState<AddPropertyFormData>(
+    data ?? initialFormData
+  );
+
+  const isEdit = useMemo(() => {
+    return !isNil(data);
+  }, [data]);
 
   const fields: Field<AddPropertyFormData>[] = [
     {
@@ -46,6 +53,10 @@ export const AddProperty: FC<{
         {
           label: "Duplex",
           value: PropertyType.DUPLEX,
+        },
+        {
+          label: "Condo",
+          value: PropertyType.CONDO,
         },
       ],
     },
@@ -82,7 +93,7 @@ export const AddProperty: FC<{
   ];
 
   return (
-    <Box sx={{ width: "40vw", p: 2 }} role="presentation">
+    <Box sx={{ p: 2 }} role="presentation">
       <div className={"flex items-center justify-between"}>
         <Typography variant={"h5"}>Add Property</Typography>
         <IconButton
@@ -99,7 +110,7 @@ export const AddProperty: FC<{
         formData={formData}
         fields={fields}
         setFormData={setFormData}
-        onSubmit={onSubmit}
+        onSubmit={(values) => onSubmit(values, isEdit)}
       />
     </Box>
   );

@@ -8,8 +8,8 @@ import {
 } from "../../components/form/form_components/component_types";
 
 const initialFormValue = {
-  monthlyIncome: 14400,
-  mortgageRate: 4.49,
+  monthlyIncome: 15000,
+  mortgageRate: 3.96,
   downPaymentPercentage: 20,
   amoritzation: 25,
 };

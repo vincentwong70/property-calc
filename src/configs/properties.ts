@@ -1,6 +1,7 @@
 export enum PropertyType {
   TOWNHOUSE = "TOWNHOUSE",
   DUPLEX = "DUPLEX",
+  CONDO = "CONDO",
 }
 
 export type Plan = {
@@ -18,6 +19,7 @@ export type Property = {
   strata_cost?: number; // per sqft
   plans?: Plan[];
   link?: string;
+  is_default?: boolean;
 } & Partial<Omit<Plan, "name">>;
 
 export const properties: Property[] = [
@@ -31,4 +33,7 @@ export const properties: Property[] = [
     is_new: true,
     link: "https://www.rew.ca/properties/1-1260-kaslo-street-vancouver-bc",
   },
-];
+].map((property) => ({
+  ...property,
+  is_default: true,
+}));

@@ -1,16 +1,19 @@
 import { AppToolbar } from "./components/layout/AppToolbar";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes/Route";
+import { SnackbarProvider } from "./providers/NotifyProvider";
 
 function App() {
   return (
-    <Router>
-      <AppToolbar />
+    <SnackbarProvider>
+      <Router>
+        <AppToolbar />
 
-      <div>
-        <AppRoutes />
-      </div>
-    </Router>
+        <div>
+          <AppRoutes />
+        </div>
+      </Router>
+    </SnackbarProvider>
   );
 }
 

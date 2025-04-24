@@ -21,7 +21,7 @@ export const AppForm = <T,>(props: AppFormProps<T>) => {
   };
 
   return (
-    <div className={"flex flex-col gap-4 p-4"}>
+    <div className={"flex flex-col gap-4 p-4 w-full"}>
       {fields.map(({ label, field, type, options }) => {
         const Component = getComponentByType(type);
 
