@@ -164,11 +164,7 @@ const monthly_payment_columns: PropertyColumn[] = [
         return "N/A";
       }
 
-      return (
-        <div>{`${Number(data.monthly_strata_fee).toFixed(1)} (${
-          data.strata_cost
-        } $/sqft)`}</div>
-      );
+      return formatCurrency(data.strata_cost);
     },
   },
   {
@@ -217,29 +213,25 @@ const createEntry = (property: Property, formData: FormValue) => {
     formData.amoritzation
   );
 
-  const monthly_strata_fee = getMonthlyStrataFees(
-    property.interior_sqft,
-    property.strata_cost
-  );
+  const monthly_strata_fees = property.strata_cost ?? 0;
 
   const entry: RowData = {
     name: property.name,
     link: property?.link,
     type: property.type,
     parking_cost,
-    strata_cost: property.strata_cost,
+    strata_cost: monthly_strata_fees,
     price: property.price as number,
     interior_sqft: property.interior_sqft,
     exterior_sqft: property.exterior_sqft,
     gst,
 
     price_per_sqft: getPricePerSqft(price, sqft),
-    monthly_strata_fee,
     transfer_tax,
     total_cost,
     down_payment,
     mortgage_payment,
-    total_monthly_fees: mortgage_payment + monthly_strata_fee,
+    total_monthly_fees: mortgage_payment + monthly_strata_fees,
 
     monthly_income: formData.monthlyIncome,
   };

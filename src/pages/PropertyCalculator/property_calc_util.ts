@@ -10,14 +10,6 @@ export const calculatePropertyTransferTax = (value: number) => {
   return value * 0.02;
 };
 
-export const getMonthlyStrataFees = (sqft?: number, strata_cost?: number) => {
-  if (sqft && strata_cost) {
-    return Number(sqft * strata_cost);
-  }
-
-  return 0;
-};
-
 export const formatCurrency = (price: number) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
