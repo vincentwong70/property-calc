@@ -34,7 +34,6 @@ import { AddProperty, AddPropertyFormData } from "./AddProperty";
 import { isNil } from "lodash";
 import { useStoreProperties } from "./property_calc_hooks";
 import { useSnackbar } from "../../providers/NotifyProvider";
-import { AlertColor } from "@mui/material";
 
 const ToolbarButton = styled(Button)({
   backgroundColor: "black",
@@ -450,7 +449,7 @@ export const PropertyCalculatorTable: FC<{
       <Drawer
         anchor="right"
         sx={{
-          "& .MuiDrawer-paper": { width: "90vw" },
+          "& .MuiDrawer-paper .Mui": { width: "90vw" },
         }}
         open={drawerOpen}
         onClose={toggleDrawer(false)}
